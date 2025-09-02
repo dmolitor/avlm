@@ -1,0 +1,110 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "85%",
+  dpi = 300
+)
+
+set.seed(321) # Reproducible results
+```
+
+# avlm
+Anytime-Valid replacements for base R's lm and aov functions (with additional robust standard error functionality).
+
+[https://arxiv.org/abs/2210.08589](https://arxiv.org/abs/2210.08589).
+
+Contributors:
+- Michael Lindon (michael.s.lindon@gmail.com)
+
+# Installation
+
+Install avlm from CRAN:
+```r
+install.packages("avlm")
+```
+
+Or install the development version from GitHub with:
+```r
+# install.packages("devtools")
+devtools::install_github("michaellindon/avlm")
+```
+
+# Anytime-Valid Linear Regression
+
+```{r}
+library(avlm)
+
+# Generate Data
+set.seed(1)
+n = 100
+X = scale(replicate(3, rnorm(n)), center = TRUE, scale = FALSE)
+trt = sample(c(0, 1), size = n, replace = TRUE)
+y = 1 + 0*X[,1] + 0*X[,2] + 1.4*X[,3] + 2.3*trt + 2*X[,1]*trt + 3*X[,2]*trt + 0*X[,3]*trt + 1*rnorm(n)
+df = data.frame(X)
+df$trt = trt
+df$y = y
+
+# Tune g to minimize the width of the confidence interval at n
+alpha = 0.05
+number_of_coefficients = ncol(model.matrix(y ~ . + trt * ., data = df))
+g_star = optimal_g(n, number_of_coefficients, alpha)
+
+# Fit a linear model and convert to anytime-valid
+classic_fit = lm(y ~ . + trt * ., data = df)
+av_fit = av(classic_fit, g = g_star)
+```
+
+```{r}
+summary(av_fit)
+```
+
+```{r}
+confint(av_fit)
+```
+
+# Robust Anytime-Valid Linear Regression
+
+```{r}
+av_fit = av(classic_fit, g=g_star, vcov_estimator = "HC0")
+```
+
+```{r}
+summary(av_fit)
+```
+
+```{r}
+confint(av_fit)
+```
+
+
+# Anytime-Valid Anova
+
+```{r}
+classic_aov <- aov(Sepal.Length ~ Species, data = iris)
+av_aov = av(classic_aov)
+```
+
+```{r}
+summary(av_aov)
+```
+
+# Tidying
+
+We can tidy up the output of both the anytime-valid linear model:
+```{r}
+tidy(av_fit, conf.int = TRUE)
+```
+
+as well as the anytime-valid ANOVA:
+```{r}
+tidy(av_aov)
+```
+

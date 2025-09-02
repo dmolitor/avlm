@@ -1,4 +1,4 @@
 #' @importFrom utils capture.output
-#' @importFrom stats coef model.matrix optimize printCoefmat quantile naprint residuals hatvalues
+#' @importFrom stats coef confint model.matrix optimize printCoefmat quantile naprint residuals hatvalues
 NULL
 

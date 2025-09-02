@@ -2,6 +2,7 @@
 #' @export
 generics::tidy
 
+#' @export
 tidy.avlm <- function(x, conf.int = FALSE, conf.level = 0.95, exponentiate = FALSE, ...) {
   ret <- tibble::as_tibble(summary(x)$coefficients, rownames = "term")
   colnames(ret) <- c("term", "estimate", "std.error", "statistic", "p.value")
@@ -11,7 +12,7 @@ tidy.avlm <- function(x, conf.int = FALSE, conf.level = 0.95, exponentiate = FAL
     ret <- dplyr::left_join(coefs, ret, by = c("term", "estimate"))
   }
   if (conf.int) {
-    ci <- suppressMessages(confint.avlm(x, ...))
+    ci <- suppressMessages(stats::confint(x, ...))
     if (is.null(dim(ci))) {
         ci <- matrix(ci, nrow = 1)
         rownames(ci) <- names(coef(x))[1]
@@ -29,6 +30,7 @@ tidy.avlm <- function(x, conf.int = FALSE, conf.level = 0.95, exponentiate = FAL
   ret
 }
 
+#' @export
 tidy.avaov <- function(x, intercept = FALSE, ...) {
   aov_summary <- tibble::as_tibble(
     summary(x, intercept = intercept, ...)[[1]],
