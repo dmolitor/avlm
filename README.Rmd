@@ -73,7 +73,7 @@ confint(av_fit)
 # Robust Anytime-Valid Linear Regression
 
 ```{r}
-av_fit = av(classic_fit, g=g_star, vcov_estimator = "HC0")
+av_fit = av(classic_fit, g = g_star, vcov_estimator = "HC0")
 ```
 
 ```{r}
@@ -94,6 +94,21 @@ av_aov = av(classic_aov)
 
 ```{r}
 summary(av_aov)
+```
+
+# Anytime-Valid Marginal Effects
+
+Calculate average marginal effects for each covariate in the model:
+```{r}
+library(marginaleffects)
+
+marginal_effects <- avg_slopes(classic_fit, variables = c("X1", "X2", "X3"))
+marginal_effects
+```
+
+Convert to anytime-valid marginal effects:
+```{r}
+av(marginal_effects)
 ```
 
 # Tidying

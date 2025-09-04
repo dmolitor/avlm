@@ -38,6 +38,33 @@ av.lm <- function(model, g = 1, vcov_estimator = NULL, ...) {
   return(model)
 }
 
+#' @export
+av.slopes <- function(model, g = 1, ...) {
+  # Extract the underlying model object
+  model_obj <- attr(model, "marginaleffects")@model
+  # Extract parameters
+  n <- length(residuals(model_obj))
+  number_of_coefficients <- length(coef(model_obj))
+  p <- number_of_coefficients - 1
+  d <- 1
+  nu <- n - p - d
+  # Anytime-valid p-values
+  t <- model$statistic
+  t2 <- t^2
+  log_G_t_values <- log_G_t(t2, nu, n, g)
+  p_values <- p_G_t(log_G_t_values)
+  # Anytime-valid CI
+  alpha <- attr(model, "marginaleffects")@conf_level
+  t_rad <- t_radius(g, n, number_of_coefficients, alpha)
+  av_lo <- model$estimate - t_rad * model$std.error
+  av_hi <- model$estimate + t_rad * model$std.error
+  # Edit the marginaleffects object
+  model$p.value <- p_values
+  model$conf.low <- av_lo
+  model$conf.high <- av_hi
+  return(model)
+}
+
 #' Summary Method for Anytime-Valid lm (avlm) Objects
 #'
 #' Computes a summary for an \code{avlm} object, a linear model enhanced with anytime-valid inference.

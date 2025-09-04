@@ -2,6 +2,7 @@
 
 S3method(av,aov)
 S3method(av,lm)
+S3method(av,slopes)
 S3method(confint,avlm)
 S3method(print,summary.avaov)
 S3method(print,summary.avlm)
