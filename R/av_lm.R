@@ -42,6 +42,9 @@ av.lm <- function(model, g = 1, vcov_estimator = NULL, ...) {
 av.slopes <- function(model, g = 1, ...) {
   # Extract the underlying model object
   model_obj <- attr(model, "marginaleffects")@model
+  if (!inherits(model_obj, "lm")) {
+    stop("The underlying model must be of class 'lm'")
+  }
   # Extract parameters
   n <- length(residuals(model_obj))
   number_of_coefficients <- length(coef(model_obj))
@@ -54,7 +57,7 @@ av.slopes <- function(model, g = 1, ...) {
   log_G_t_values <- log_G_t(t2, nu, n, g)
   p_values <- p_G_t(log_G_t_values)
   # Anytime-valid CI
-  alpha <- attr(model, "marginaleffects")@conf_level
+  alpha <- 1 - attr(model, "marginaleffects")@conf_level
   t_rad <- t_radius(g, n, number_of_coefficients, alpha)
   av_lo <- model$estimate - t_rad * model$std.error
   av_hi <- model$estimate + t_rad * model$std.error
