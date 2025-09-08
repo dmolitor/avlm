@@ -42,9 +42,6 @@ av.lm <- function(model, g = 1, vcov_estimator = NULL, ...) {
 av.slopes <- function(model, g = 1, ...) {
   # Extract the underlying model object
   model_obj <- attr(model, "marginaleffects")@model
-  if (!inherits(model_obj, "lm")) {
-    stop("The underlying model must be of class 'lm'")
-  }
   # Extract parameters
   n <- length(residuals(model_obj))
   number_of_coefficients <- length(coef(model_obj))
