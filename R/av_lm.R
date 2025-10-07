@@ -65,6 +65,66 @@ av.slopes <- function(model, g = 1, ...) {
   return(model)
 }
 
+#' Convert arbitrary model objects to anytime-valid counterparts
+#'
+#' Converts a model object into an anytime-valid version by tidying the model
+#' and utilizing the corresponding estimated parameters. The resulting adjusted
+#' estimates support anytime-valid inference.
+#'
+#' @param model A model object from a linear model fit.
+#' @param g An integer precision parameter for anytime-valid inference. Default is 1.
+#' @param alpha The size of the test. Defaults to 0.05.
+#' @param conf.int Logical indicating whether or not to include a confidence interval
+#'   in the tidied output. Defaults to TRUE.
+#' @param ... Additional arguments passed to \code{generics::tidy}.
+#'
+#' @returns A \code{tibble} with tidied model estimates adjusted to be anytime-valid.
+#'
+#' @examples
+#' if (requireNamespace("broom", quietly = TRUE)) {
+#'   # Fit a linear model on the built-in mtcars dataset
+#'   fit <- lm(mpg ~ wt + hp, data = mtcars)
+#'
+#'   # Convert the standard lm coefficient estimates to an anytime-valid tidy tibble
+#'   av_fit <- av_tidy(fit, g = 1)
+#'
+#'   # Print the anytime-valid estimates
+#'   print(av_fit)
+#' }
+#'
+#' @export
+av_tidy <- function(model, g = 1, alpha = 0.05, conf.int = TRUE, ...) {
+  if (!any(paste0("tidy.", class(model)) %in% utils::methods("tidy"))) {
+    stop("No tidy method found for class: ", paste0(class(model), collapse = "/"))
+  }
+  # Tidy the model to get estimates, SEs, statistics, etc.
+  tidied <- generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...)
+  # Extract relevant info
+  delta <- tidied$estimate
+  se <- tidied$std.error
+  t <- tidied$statistic
+  t2 <- t^2
+  # Extract parameters
+  n <- length(residuals(model))
+  p <- length(coef(model))
+  d <- 1
+  nu <- n - p - d
+  # Anytime-valid p-values
+  log_G_t_values <- log_G_t(t2, nu, n, g)
+  p_values <- p_G_t(log_G_t_values)
+  # Anytime-valid confidence intervals
+  t_rad <- t_radius(g, n, p, alpha)
+  av_lo <- delta - t_rad * se
+  av_hi <- delta + t_rad * se
+  # Assemble output
+  tidied$p.value <- p_values
+  if (conf.int) {
+    tidied$conf.low <- av_lo
+    tidied$conf.high <- av_hi
+  }
+  return(tidied)
+}
+
 #' Summary Method for Anytime-Valid lm (avlm) Objects
 #'
 #' Computes a summary for an \code{avlm} object, a linear model enhanced with anytime-valid inference.
