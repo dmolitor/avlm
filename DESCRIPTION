@@ -9,11 +9,13 @@ Description: Implements the anytime valid methodology for linear models document
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     dplyr (>= 1.0.0),
     generics,
-    tibble (>= 2.0.0)
+    tibble (>= 2.0.0),
+    utils
 Suggests: 
+    broom,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
