@@ -1,3 +1,9 @@
+# avlm 0.1.1
+
+- Adds utilities for tidying anytime-valid `lm` and `anova` models via the `tidy()` function.
+- Adds a generic `av_tidy()` function that will tidy any model with a suppported `broom::tidy()` method.
+This function should be used cautiously with only appropriate linear model classes.
+
 # avlm 0.1.0
 
 ## New Features
