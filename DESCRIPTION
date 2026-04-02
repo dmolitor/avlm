@@ -15,7 +15,8 @@ Imports:
     generics,
     tibble (>= 2.0.0),
     utils
-Suggests: 
+Suggests:
     broom,
+    marginaleffects,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -12,7 +12,7 @@ tidy.avlm <- function(x, conf.int = FALSE, conf.level = 0.95, exponentiate = FAL
     ret <- dplyr::left_join(coefs, ret, by = c("term", "estimate"))
   }
   if (conf.int) {
-    ci <- suppressMessages(stats::confint(x, ...))
+    ci <- suppressMessages(stats::confint(x, level = conf.level, ...))
     if (is.null(dim(ci))) {
         ci <- matrix(ci, nrow = 1)
         rownames(ci) <- names(coef(x))[1]

@@ -94,11 +94,14 @@ av.slopes <- function(model, g = 1, ...) {
 #'
 #' @export
 av_tidy <- function(model, g = 1, alpha = 0.05, conf.int = TRUE, ...) {
-  if (!any(paste0("tidy.", class(model)) %in% utils::methods("tidy"))) {
-    stop("No tidy method found for class: ", paste0(class(model), collapse = "/"))
-  }
   # Tidy the model to get estimates, SEs, statistics, etc.
-  tidied <- generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...)
+  tidied <- tryCatch(
+    generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...),
+    error = function(e) {
+      stop("No tidy method found for class: ", paste0(class(model), collapse = "/"),
+           call. = FALSE)
+    }
+  )
   # Extract relevant info
   delta <- tidied$estimate
   se <- tidied$std.error
@@ -107,8 +110,7 @@ av_tidy <- function(model, g = 1, alpha = 0.05, conf.int = TRUE, ...) {
   # Extract parameters
   n <- length(residuals(model))
   p <- length(coef(model))
-  d <- 1
-  nu <- n - p - d
+  nu <- n - p
   # Anytime-valid p-values
   log_G_t_values <- log_G_t(t2, nu, n, g)
   p_values <- p_G_t(log_G_t_values)

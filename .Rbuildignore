@@ -1,2 +1,7 @@
 ^renv$
 ^renv\.lock$
+^resources$
+^CLAUDE\.md$
+^LICENSE\.md$
+^README\.Rmd$
+^.claude$
