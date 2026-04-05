@@ -24,5 +24,3 @@ This function should be used cautiously with only appropriate linear model class
 - Based on the methodology described in  
   *"Anytime-Valid Linear Models and Regression Adjusted Causal Inference in Randomized Experiments"*  
   available at: <https://arxiv.org/abs/2210.08589>
-
-

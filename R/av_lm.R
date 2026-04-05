@@ -95,13 +95,7 @@ av.slopes <- function(model, g = 1, ...) {
 #' @export
 av_tidy <- function(model, g = 1, alpha = 0.05, conf.int = TRUE, ...) {
   # Tidy the model to get estimates, SEs, statistics, etc.
-  tidied <- tryCatch(
-    generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...),
-    error = function(e) {
-      stop("No tidy method found for class: ", paste0(class(model), collapse = "/"),
-           call. = FALSE)
-    }
-  )
+  tidied <- generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...)
   # Extract relevant info
   delta <- tidied$estimate
   se <- tidied$std.error
