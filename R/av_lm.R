@@ -94,8 +94,11 @@ av.slopes <- function(model, g = 1, ...) {
 #'
 #' @export
 av_tidy <- function(model, g = 1, alpha = 0.05, conf.int = TRUE, ...) {
+  if (!requireNamespace("broom", quietly = TRUE)) {
+    stop("`broom` package must be installed")
+  }
   # Tidy the model to get estimates, SEs, statistics, etc.
-  tidied <- generics::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...)
+  tidied <- broom::tidy(model, conf.int = conf.int, conf.level = 1 - alpha, ...)
   # Extract relevant info
   delta <- tidied$estimate
   se <- tidied$std.error
